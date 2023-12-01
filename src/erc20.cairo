@@ -63,3 +63,72 @@ mod ERC20 {
         const BURN_FROM_ZERO: felt252 = 'ERC20: burn from 0';
         const MINT_TO_ZERO: felt252 = 'ERC20: mint to 0';
     }
+
+    #[constructor]
+    fn constructor(
+        ref self: ContractState,
+        name: felt252,
+        symbol: felt252,
+        initial_supply: u256,
+        recipient: ContractAddress
+    ) {
+        self.initializer(name, symbol);
+        self._mint(recipient, initial_supply);
+    }
+
+    //
+    // External
+    //
+
+    #[external(v0)]
+    impl ERC20Impl of IERC20<ContractState> {
+        fn name(self: @ContractState) -> felt252 {
+            self.ERC20_name.read()
+        }
+
+        fn symbol(self: @ContractState) -> felt252 {
+            self.ERC20_symbol.read()
+        }
+
+        fn decimals(self: @ContractState) -> u8 {
+            18
+        }
+
+        fn totalSupply(self: @ContractState) -> u256 {
+            self.ERC20_total_supply.read()
+        }
+
+        fn balanceOf(self: @ContractState, account: ContractAddress) -> u256 {
+            self.ERC20_balances.read(account)
+        }
+
+        fn allowance(
+            self: @ContractState, owner: ContractAddress, spender: ContractAddress
+        ) -> u256 {
+            self.ERC20_allowances.read((owner, spender))
+        }
+
+        fn transfer(ref self: ContractState, recipient: ContractAddress, amount: u256) -> bool {
+            let sender = get_caller_address();
+            self._transfer(sender, recipient, amount);
+            true
+        }
+
+        fn transferFrom(
+            ref self: ContractState,
+            sender: ContractAddress,
+            recipient: ContractAddress,
+            amount: u256
+        ) -> bool {
+            let caller = get_caller_address();
+            self._spend_allowance(sender, caller, amount);
+            self._transfer(sender, recipient, amount);
+            true
+        }
+
+        fn approve(ref self: ContractState, spender: ContractAddress, amount: u256) -> bool {
+            let caller = get_caller_address();
+            self._approve(caller, spender, amount);
+            true
+        }
+    }

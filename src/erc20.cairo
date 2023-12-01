@@ -132,3 +132,31 @@ mod ERC20 {
             true
         }
     }
+
+    #[external(v0)]
+    fn increase_allowance(
+        ref self: ContractState, spender: ContractAddress, added_value: u256
+    ) -> bool {
+        self._increase_allowance(spender, added_value)
+    }
+
+    #[external(v0)]
+    fn increaseAllowance(
+        ref self: ContractState, spender: ContractAddress, addedValue: u256
+    ) -> bool {
+        increase_allowance(ref self, spender, addedValue)
+    }
+
+    #[external(v0)]
+    fn decrease_allowance(
+        ref self: ContractState, spender: ContractAddress, subtracted_value: u256
+    ) -> bool {
+        self._decrease_allowance(spender, subtracted_value)
+    }
+
+    #[external(v0)]
+    fn decreaseAllowance(
+        ref self: ContractState, spender: ContractAddress, subtractedValue: u256
+    ) -> bool {
+        decrease_allowance(ref self, spender, subtractedValue)
+    }

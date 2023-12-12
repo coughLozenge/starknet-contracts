@@ -1,2 +1,1 @@
-# starknet_erc20
-Starknet Token
+# Starknet Contracts
